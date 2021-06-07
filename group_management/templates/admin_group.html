@@ -1,0 +1,253 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+<style>
+    .mymodal-dialog {
+        transform: none!important;
+    }
+    .hidden {
+        display: none
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="edit-group-modal" class="modal fade">
+    <div class="modal-dialog mymodal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-action text-center w-100">Edit Group</h2>
+                <button type="button" class="close" id="close-edit-modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body clearfix">
+                <form id="group-edit-form" method="POST">
+                    <div class="form-group">
+                        {{ edit_form.group_name.label }}
+                        {{ edit_form.group_name(class="form-control") }}
+                    </div>
+                    {{ edit_form.nonce() }}
+                    {{ edit_form.submit(class="btn btn-primary btn-outlined float-right modal-action") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="delete-group-modal" class="modal fade">
+    <div class="modal-dialog mymodal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-action text-center w-100">Edit Group</h2>
+                <button type="button" class="close" id="close-delete-modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body clearfix">
+                <form id="group-delete-form" method="POST">
+                    <div class="form-group">
+                        {{ delete_form.delete() }} {{ delete_form.delete.label }}
+
+
+                    </div>
+                    {{ delete_form.nonce() }}
+                    {{ delete_form.submit(class="btn btn-primary btn-outlined float-right modal-action") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="remove-team-modal" class="modal fade">
+    <div class="modal-dialog mymodal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-action text-center w-100">Remove team from group</h2>
+                <button type="button" class="close" id="close-remove-team-modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body clearfix">
+                <form id="group-team-form" method="POST">
+                    <div class="form-group">
+                        {{ remove_team_form.team_id(class="hidden") }}
+                        <p>
+                            Are you sure you want to remove <strong id="remove-team-strong"></strong> from <strong>{{ group.name }}</strong>?
+                        </p>
+
+                    </div>
+                    {{ remove_team_form.nonce() }}
+                    {{ remove_team_form.submit(class="btn btn-primary btn-outlined float-right modal-action") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 id="team-id" class="text-center">{{ group.name }}</h1>
+        <div class="mb-2">
+            {% if group.active %}
+            <span class="badge badge-success">active</span>
+            {% else %}
+            <span class="badge badge-danger">inactive</span>
+            {% endif %}
+        </div>
+
+        <h2 class="text-center">{{ members | length }} members</h2>
+        <h2 class="text-center">{{ teams | length }} teams</h2>
+        <hr class="w-50">
+        <div class="pt-3">
+            <a class="text-dark btn-top" id="edit-group" data-groupID="{{ group.id }}">
+                <i class="btn-fa fas fa-pencil-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
+                   title="Edit Group"></i>
+            </a>
+            <a class="text-dark btn-top" id="delete-group" data-groupID="{{ group.id }}">
+                <i class="btn-fa fas fa-trash-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
+                   title="Delete Group"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row min-vh-25 pt-5 pb-5">
+        <div class="col-md-12">
+            <h3 class="text-center">Group Users</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <td class="text-left"><b>User Name</b></td>
+                    <td class="text-left"><b>E-Mail</b></td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for member in members %}
+                <tr>
+                    <td class="text-left">
+                        <a href="{{ url_for('admin.users_detail', user_id=member.id) }}">
+                            {{ member.name }}
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a href="mailto:{{ member.email }}" target="_blank">
+                            {{ member.email }}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<hr>
+
+<div class="container">
+    <div class="row min-vh-25 pt-5 pb-5">
+        <div class="col-md-12">
+            <h3 class="text-center">Group Teams</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <td class="text-left"><b>Team</b></td>
+                    <td class="text-left">Members</td>
+                    <td class="text-center"></td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for team in teams %}
+                <tr>
+                    <td class="text-left">
+                        <a href="{{ url_for('admin.teams_detail', team_id=team.id) }}">
+                            {{ team.name }}
+                        </a>
+                    </td>
+                    <td class="text-left">
+                        {% for member in team.members %}
+                        <a href="{{ url_for('admin.users_detail', user_id=member.id) }}">
+                            {{ member.name }}
+                        </a>
+                        {% endfor %}
+                    </td>
+                    <td class="text-center">
+							<a class="delete-team cursor-pointer" data-teamid="{{ team.id }}"
+                                  data-toggle="tooltip" data-teamname="{{ team.name }}"
+                                  data-placement="top" title="Remove {{ team.name }}">
+								<i class="fas fa-times"></i>
+							</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    function showModal(elemId){
+        modal = document.getElementById(elemId);
+        modal.classList.add("show");
+        modal.style.display = "block";
+
+    }
+    function hideModal(elemId){
+        modal = document.getElementById(elemId);
+        modal.classList.remove("show");
+        modal.style.display = "none";
+
+    }
+    document.getElementById("edit-group").addEventListener('click', function(e){
+        e.preventDefault();
+        showModal('edit-group-modal')
+    });
+    document.getElementById("close-edit-modal").addEventListener('click', function(e){
+        e.preventDefault();
+        hideModal('edit-group-modal')
+    });
+
+    document.getElementById("delete-group").addEventListener('click', function(e){
+        e.preventDefault();
+        showModal('delete-group-modal')
+    });
+    document.getElementById("close-delete-modal").addEventListener('click', function(e){
+        e.preventDefault();
+        hideModal('delete-group-modal')
+    });
+
+    
+    
+    document.querySelectorAll(".delete-team").forEach(item => {
+        console.log(item);
+        item.addEventListener('click', function(e){
+            e.preventDefault();
+            document.getElementById('team_id').value = item.dataset.teamid
+            document.getElementById('remove-team-strong').textContent = item.dataset.teamname
+            showModal('remove-team-modal')
+        });
+    });
+    
+    
+
+    document.getElementById("close-remove-team-modal").addEventListener('click', function(e){
+        e.preventDefault();
+        hideModal('remove-team-modal')
+        document.getElementById('team_id').value = ''
+    });
+});
+</script>
+{% endblock %}
+
+{% block entrypoint %}
+{% endblock %}

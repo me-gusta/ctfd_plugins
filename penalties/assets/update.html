@@ -1,0 +1,35 @@
+{% extends "admin/challenges/update.html" %}
+
+{% block value %}
+<div class="form-group">
+    <label for="value">Current Value<br>
+        <small class="form-text text-muted">
+            This is how many points the challenge is worth right now.
+        </small>
+    </label>
+    <input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}">
+</div>
+<div class="form-group">
+    <label for="penalty_amount">Amount of Penalty (%)<br>
+        <small class="form-text text-muted">
+            This is how many percents (of the value) is the penalty.
+        </small>
+    </label>
+    <input type="number" min="0" max="100" class="form-control"
+           name="penalty_amount" placeholder="Enter value" value="{{ challenge.penalty_amount }}">
+</div>
+<div class="form-group">
+    <label>Active<br>
+        <small class="form-text text-muted">
+            Activate penalty.
+        </small>
+    </label><br>
+    {% if challenge.is_active %}
+    <label for="is_active_off">OFF </label><input type="radio" name="is_active" value="0" id="is_active_off"><br>
+    <label for="is_active_on">ON </label><input type="radio" name="is_active" value="1" id="is_active_on" checked>
+    {% else %}
+    <label for="is_active_off">OFF </label><input type="radio" name="is_active" value="0" id="is_active_off" checked><br>
+    <label for="is_active_on">ON </label><input type="radio" name="is_active" value="1" id="is_active_on"  >
+    {% endif %}
+</div>
+{% endblock %}

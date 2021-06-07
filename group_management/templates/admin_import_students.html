@@ -1,0 +1,84 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+<style>
+    .student-info {
+        min-height: 20rem;
+    }
+    img {
+        border: 3px solid var(--dark);
+        height: 150px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Import Students
+        </h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <a type="button" class="btn btn-outline-secondary" href="{{ url_for('admin_groups') }}">
+                Back
+            </a>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <p>
+                Import students from excel file
+            </p>
+            <ol>
+                <li>
+                    <p> Select rows from a table with four or three columns.
+                        <br>
+                        (Last Name, First Name, Middle Name and student ID are required. Third column is optional)
+                        <br>
+                        <img src="/plugins/group_management/assets/img/01.jpg" alt="">
+                        <img src="/plugins/group_management/assets/img/02.jpg" alt="">
+                    </p>
+                </li>
+                <li>Copy selected rows to clipboard.</li>
+                <li><p>
+                        Click on the input down below and paste.
+                        <br>
+                        <img src="/plugins/group_management/assets/img/03.jpg" alt="">
+                        <img src="/plugins/group_management/assets/img/04.jpg" alt="">
+                </p></li>
+                <li>Press "Import" button.</li>
+            </ol>
+            <p>Imported users will have their full name as a username and student ID as a password.</p>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <form method="POST">
+                <div class="form-group">
+                    {{ form.student_info.label }}
+                    {{ form.student_info(class="form-control student-info") }}
+                </div>
+
+                {{ form.nonce() }}
+                {{ form.submit(class="btn btn-primary btn-outlined") }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+
+	});
+</script>
+{% endblock %}
+
+{% block entrypoint %}
+{% endblock %}

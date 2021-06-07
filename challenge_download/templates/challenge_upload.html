@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+<style>
+.card-radio:checked + .card {
+	background-color: transparent !important;
+	border-color: #a3d39c;
+	box-shadow: 0 0 0 0.1rem #a3d39c;
+	transition: background-color 0.3s, border-color 0.3s;
+}
+.card-radio:checked + .card .card-radio-clone{
+	visibility: visible !important;
+}
+.card:hover {
+	cursor: pointer;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Create Challenge</h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row"><a href="{{ url_for('challenge_download_list') }}">Go to Downloads</a></div>
+    <br>
+    <div class="row">
+        <div class="col-md-6" style="margin: auto">
+            <form method="POST" action="{{ url_for('challenge_upload') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>
+                        Files:
+                        <small class="form-text text-muted">ZIP files which represent challenges</small>
+                    </label>
+                    {{ form.challenge_zips(class="form-control-file", multiple="multiple") }}
+                    <sub class="text-muted">Attach multiple files using Control+Click or Cmd+Click</sub>
+                    {{ form.nonce() }}
+                </div>
+
+                <input type="submit" class="btn btn-primary" value="Upload">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block entrypoint %}
+<script defer src="{{ url_for('views.themes', theme='admin', path='js/pages/challenge.js') }}"></script>
+{% endblock %}

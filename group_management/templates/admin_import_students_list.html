@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+<style>
+    .student-info {
+        min-height: 20rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Import Students
+        </h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <a type="button" class="btn btn-outline-secondary" href="{{ url_for('admin_groups') }}">
+                Back
+            </a>
+        </div>
+    </div>
+
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center">Users Created</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <td class="text-left"><b>User Name</b></td>
+                    <td class="text-left"><b>Password</b></td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                <tr>
+                    <td class="text-left">
+                        {{ user.name }}
+                    </td>
+                    <td class="text-center">
+                        {{ user.password }}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+
+	});
+</script>
+{% endblock %}
+
+{% block entrypoint %}
+{% endblock %}

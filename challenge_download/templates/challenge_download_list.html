@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+<style>
+    .set-only-active {
+        max-width: fit-content
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Challenges
+        </h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row"><a href="{{ url_for('challenge_upload') }}">Go to Uploads</a></div>
+    <br>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped border">
+                <thead>
+                <tr>
+                    <th class="sort-col text-center"><b>ID</b></th>
+                    <th class="sort-col text-left"><b>Name</b></th>
+                    <th class="sort-col text-left"><b>Category</b></th>
+                    <th class="sort-col text-left"><b>Type</b></th>
+                    <th class="sort-col text-center"><b>Download</b></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for challenge in challenges %}
+                <tr>
+                    <td class="text-center">{{ challenge.id }}</td>
+                    <td>{{ challenge.name }}</td>
+                    <td class="d-none d-md-table-cell d-lg-table-cell">{{ challenge.category }}</td>
+                    <td class="d-none d-md-table-cell d-lg-table-cell">{{ challenge.type }}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-block challenge-download" data-challengeid="{{ challenge.id }}">Download</button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<form method="post" action="{{ url_for('challenge_download_challenge') }}" accept-charset="utf-8"
+      id="hidden-form" enctype="multipart/form-data" style="display: none">
+    {{ form.nonce() }}
+    {{ form.challenge_id }}
+    {{ form.action }}
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+		async function challengeAPICall(challengeID, action) {
+		    document.getElementById("action").value = action;
+		    document.getElementById("challenge_id").value = challengeID;
+		    document.getElementById("hidden-form").submit();
+		}
+
+		document.querySelectorAll(".challenge-download").forEach(item => {
+          item.addEventListener('click', function() { challengeAPICall(this.dataset.challengeid, "download"); } );
+        });
+
+	});
+</script>
+{% endblock %}
+
+{% block entrypoint %}
+<script defer src="{{ url_for('views.themes', theme='admin', path='js/pages/challenges.js') }}"></script>
+{% endblock %}

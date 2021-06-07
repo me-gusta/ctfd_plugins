@@ -1,0 +1,127 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Groups
+            <span class="create-group" role="button" data-toggle="tooltip" title="Create group">
+				<a href="{{ url_for('admin_create_group') }}" style="color: inherit;">
+					<i class="btn-fa fas fa-plus-circle"></i>
+				</a>
+			</span>
+        </h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <a type="button" class="btn btn-outline-secondary" href="{{ url_for('admin_import_students') }}">
+                Import Students
+            </a>
+            <div class="float-right pb-3">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary" id="set-all-active">
+                        Set all active
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="set-all-inactive">
+                        Set all inactive
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="groupsboard" class="table table-striped border">
+                <thead>
+                <tr>
+                    <th class="sort-col text-center"><b>ID</b></th>
+                    <th class="sort-col text-left"><b>Group</b></th>
+                    <th class="sort-col text-center"><b>Toggle Active</b></th>
+                    <th class="sort-col text-center"><b>Set Only Active</b></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for group in groups.items %}
+                <tr name="{{ group.id }}">
+
+                    <td class="group-id text-center" value="{{ group.id }}">{{ group.id }}</td>
+                    <td class="group-name" value="{{ group.name }}">
+                        <a href="{{ url_for('admin_group', group_id=group.id) }}">
+                            {{ group.name | truncate(32) }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if group.active %}
+                            <button class="btn btn-success btn-lg btn-block toggle-active"
+                                    data-groupID="{{ group.id }}" data-active="1">Active</button>
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg btn-block toggle-active"
+                                    data-groupID="{{ group.id }}" data-active="0">Inactive</button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary btn-block set-only-active" data-groupID="{{ group.id }}">Set</button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <!--  -->
+            {% if groups.pages > 1 %}
+            <div class="text-center">Page
+                <br>
+                {% if groups.page != 1 %}
+                <a href="{{ prev_page }}">&lt;&lt;&lt;</a>
+                {% endif %}
+                <select class="page-select">
+                    {% for page in range(1, groups.pages + 1) %}
+                    <option {% if groups.page == page %}selected{% endif %}>{{ page }}</option>
+                    {% endfor %}
+                </select>
+                {% if groups.next_num %}
+                <a href="{{ next_page }}">&gt;&gt;&gt;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<form method="post" action="/admin/groups/modify" accept-charset="utf-8"
+      id="hidden-form" enctype="multipart/form-data" style="display: none">
+    {{ form.nonce() }}
+    {{ form.group_id }}
+    {{ form.action }}
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+		async function groupAPICall(groupID, action) {
+		    document.getElementById("action").value = action;
+		    document.getElementById("group_id").value = groupID;
+		    document.getElementById("hidden-form").submit();
+		}
+
+		document.querySelectorAll(".toggle-active").forEach(item => {
+          item.addEventListener('click', function() { groupAPICall(this.dataset.groupid, "toggle"); } );
+        });
+		document.querySelectorAll(".set-only-active").forEach(item => {
+          item.addEventListener('click', function() { groupAPICall(this.dataset.groupid, "set_only_active"); } );
+        });
+
+		document.getElementById("set-all-active").addEventListener('click', function() { groupAPICall(1, "set_all_active"); } );
+		document.getElementById("set-all-inactive").addEventListener('click', function() { groupAPICall(1, "set_all_inactive"); } );
+
+	});
+</script>
+{% endblock %}
+
+{% block entrypoint %}
+<script defer src="{{ url_for('views.themes', theme='admin', path='js/pages/challenges.js') }}"></script>
+{% endblock %}

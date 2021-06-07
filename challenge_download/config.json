@@ -1,0 +1,4 @@
+{
+  "name": "Download Challenges",
+  "route": "/admin/challenge_download"
+}

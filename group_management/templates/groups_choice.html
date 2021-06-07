@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+<style>
+	.groups-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+		row-gap: 0.5em;
+		column-gap: 0.5em;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Group</h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 text-center">
+            <p>Welcome to {{ Configs.ctf_name }}!</p>
+            <p>
+                In order to participate you must join a group.
+            </p>
+        </div>
+    </div>
+    {% if is_captain %}
+    <div class="row pt-3">
+        <div class="groups-grid">
+            {% for group in groups %}
+            <button class="btn btn-outline-dark select-group-btn" data-link="{{ url_for('groups_choose', group_id=group.id) }}">{{ group.name }}</button>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="row pt-3">
+        <div class="groups-grid">
+            <small class="form-text text-muted">
+                Only team captain can choose a group.
+            </small>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    document.addEventListener('DOMContentLoaded', function(){
+		var groupBtns = document.querySelectorAll(".select-group-btn");
+		function selectGroup() {
+		    let groupLink = this.dataset.link
+		    window.location.href = groupLink
+		}
+		groupBtns.forEach(item => {
+          item.addEventListener('click', selectGroup);
+        });
+	});
+</script>
+{% endblock %}
