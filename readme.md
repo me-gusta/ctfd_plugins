@@ -11,6 +11,7 @@ _!!haven't been tested in production yet!!_
 
 You can download challenges and then upload them to another instance of CTFd.
 Serializes chosen challenge and creates ZIP archive of its content and files.
+This plugin is useful for backing up challenges.
 
 
 Requirements:
