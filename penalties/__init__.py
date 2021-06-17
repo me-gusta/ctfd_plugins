@@ -1,7 +1,3 @@
-# from __future__ import division  # Use floating point for math calculations
-
-# import math
-
 from flask import Blueprint
 
 from CTFd.models import Challenges, db
@@ -20,7 +16,6 @@ class PenaltyChallenge(Challenges):
 
     def __init__(self, *args, **kwargs):
         super(PenaltyChallenge, self).__init__(**kwargs)
-        # self.initial = True
 
 
 class PenaltyCTFChallenge(BaseChallenge):

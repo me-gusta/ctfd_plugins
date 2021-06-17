@@ -135,7 +135,6 @@ def challenge_upload():
                 tag_data['challenge_id'] = challenge.id
                 schema = TagSchema()
                 response = schema.load(tag_data, session=db.session)
-                # print(f'{response.data=}')
                 db.session.add(response.data)
             db.session.commit()
             db.session.close()

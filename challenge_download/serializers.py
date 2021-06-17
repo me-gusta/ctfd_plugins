@@ -18,10 +18,7 @@ def serialize(obj: Model) -> dict:
         elif type(attr) in (int, str, bool, dict):
             out[attr_name] = attr
         elif type(attr) is InstrumentedList:
-            # print(attr_name, attr)
             out[attr_name] = [serialize(x) for x in attr]
-        # else:
-        #     print(f'404 {type(attr)}, {attr_name}, {attr}')
     return out
 
 

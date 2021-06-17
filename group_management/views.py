@@ -256,35 +256,40 @@ def setup():
 
 @admins_only
 def admin_groups():
-    q = request.args.get("q")
-    field = request.args.get("field")
-    page = abs(request.args.get("page", 1, type=int))
-    filters = []
+    if request.method == 'POST':
+        try:
+            group_id = int(request.form['group_id'])
+            action = request.form['action']
+        except (KeyError, AttributeError, TypeError):
+            return abort(400)
 
-    if q:
-        # The field exists as an exposed column
-        if Groups.__mapper__.has_property(field):
-            filters.append(getattr(Groups, field).like("%{}%".format(q)))
+        group = Groups.query.get(group_id)
 
-    groups = (
-        Groups.query.filter(*filters)
-            .order_by(Groups.id.asc())
-            .paginate(page=page, per_page=50)
-    )
+        if not group:
+            return abort(404)
 
-    args = dict(request.args)
-    args.pop("page", 1)
+        if action == 'toggle':
+            group.active = not group.active
+        elif action == 'set_only_active':
+            for g in Groups.query.all():
+                g.active = False
+            group.active = True
+        elif action == 'set_all_active':
+            for g in Groups.query.all():
+                g.active = True
+        elif action == 'set_all_inactive':
+            for g in Groups.query.all():
+                g.active = False
+        else:
+            return abort(404)
 
+        db.session.commit()
+        db.session.close()
+        return redirect(url_for('admin_groups'))
+
+    groups = Groups.query.all()
     form = GroupModifyForm()
-    return render_template(
-        'admin_groups.html',
-        groups=groups,
-        prev_page=url_for(request.endpoint, page=groups.prev_num, **args),
-        next_page=url_for(request.endpoint, page=groups.next_num, **args),
-        q=q,
-        field=field,
-        form=form
-    )
+    return render_template('admin_groups.html', groups=groups, form=form)
 
 
 @admins_only
@@ -370,37 +375,9 @@ def admin_import_students():
     return render_template('admin_import_students.html', form=form)
 
 
-@admins_only
-def admin_groups_modify():
-    try:
-        group_id = int(request.form['group_id'])
-        action = request.form['action']
-    except (KeyError, AttributeError, TypeError):
-        return abort(400)
-
-    group = Groups.query.get(group_id)
-
-    if not group:
-        return abort(404)
-
-    if action == 'toggle':
-        group.active = not group.active
-    elif action == 'set_only_active':
-        for g in Groups.query.all():
-            g.active = False
-        group.active = True
-    elif action == 'set_all_active':
-        for g in Groups.query.all():
-            g.active = True
-    elif action == 'set_all_inactive':
-        for g in Groups.query.all():
-            g.active = False
-    else:
-        return abort(404)
-
-    db.session.commit()
-    db.session.close()
-    return redirect(url_for('admin_groups'))
+# @admins_only
+# def admin_groups_modify():
+#
 
 
 def groups_choice():
@@ -420,7 +397,7 @@ def groups_choose(group_id):
     if current_team.captain_id != session["id"] or get_current_group(current_team):
         return redirect(url_for('groups_choice'))
 
-    group = Groups.query.filter_by(id=group_id).first()
+    group = Groups.query.filter_by(id=group_id).first_or_404()
     group.members.append(current_team)
     db.session.commit()
     db.session.close()

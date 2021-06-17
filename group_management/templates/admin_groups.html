@@ -46,7 +46,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for group in groups.items %}
+                {% for group in groups %}
                 <tr name="{{ group.id }}">
 
                     <td class="group-id text-center" value="{{ group.id }}">{{ group.id }}</td>
@@ -71,27 +71,10 @@
                 {% endfor %}
                 </tbody>
             </table>
-            <!--  -->
-            {% if groups.pages > 1 %}
-            <div class="text-center">Page
-                <br>
-                {% if groups.page != 1 %}
-                <a href="{{ prev_page }}">&lt;&lt;&lt;</a>
-                {% endif %}
-                <select class="page-select">
-                    {% for page in range(1, groups.pages + 1) %}
-                    <option {% if groups.page == page %}selected{% endif %}>{{ page }}</option>
-                    {% endfor %}
-                </select>
-                {% if groups.next_num %}
-                <a href="{{ next_page }}">&gt;&gt;&gt;</a>
-                {% endif %}
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
-<form method="post" action="/admin/groups/modify" accept-charset="utf-8"
+<form method="post" action="{{ url_for('admin_groups') }}" accept-charset="utf-8"
       id="hidden-form" enctype="multipart/form-data" style="display: none">
     {{ form.nonce() }}
     {{ form.group_id }}
@@ -101,24 +84,23 @@
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function(){
-		async function groupAPICall(groupID, action) {
-		    document.getElementById("action").value = action;
-		    document.getElementById("group_id").value = groupID;
-		    document.getElementById("hidden-form").submit();
-		}
+document.addEventListener('DOMContentLoaded', function(){
+    async function SubmitForm(groupID, action) {
+        document.getElementById("action").value = action;
+        document.getElementById("group_id").value = groupID;
+        document.getElementById("hidden-form").submit();
+    }
 
-		document.querySelectorAll(".toggle-active").forEach(item => {
-          item.addEventListener('click', function() { groupAPICall(this.dataset.groupid, "toggle"); } );
-        });
-		document.querySelectorAll(".set-only-active").forEach(item => {
-          item.addEventListener('click', function() { groupAPICall(this.dataset.groupid, "set_only_active"); } );
-        });
+    document.querySelectorAll(".toggle-active").forEach(item => {
+      item.addEventListener('click', function() { SubmitForm(this.dataset.groupid, "toggle"); } );
+    });
+    document.querySelectorAll(".set-only-active").forEach(item => {
+      item.addEventListener('click', function() { SubmitForm(this.dataset.groupid, "set_only_active"); } );
+    });
 
-		document.getElementById("set-all-active").addEventListener('click', function() { groupAPICall(1, "set_all_active"); } );
-		document.getElementById("set-all-inactive").addEventListener('click', function() { groupAPICall(1, "set_all_inactive"); } );
-
-	});
+    document.getElementById("set-all-active").addEventListener('click', function() { SubmitForm(1, "set_all_active"); } );
+    document.getElementById("set-all-inactive").addEventListener('click', function() { SubmitForm(1, "set_all_inactive"); } );
+});
 </script>
 {% endblock %}
 

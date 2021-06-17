@@ -47,6 +47,9 @@
             <div class="modal-body clearfix">
                 <form id="group-delete-form" method="POST">
                     <div class="form-group">
+                        <p>
+                            Are you sure you want to delete <strong>{{ group.name }}</strong>?
+                        </p>
                         {{ delete_form.delete() }} {{ delete_form.delete.label }}
 
 
@@ -196,18 +199,18 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    function showModal(elemId){
-        modal = document.getElementById(elemId);
-        modal.classList.add("show");
-        modal.style.display = "block";
+function showModal(elemId){
+    modal = document.getElementById(elemId);
+    modal.classList.add("show");
+    modal.style.display = "block";
 
-    }
-    function hideModal(elemId){
-        modal = document.getElementById(elemId);
-        modal.classList.remove("show");
-        modal.style.display = "none";
+}
+function hideModal(elemId){
+    modal = document.getElementById(elemId);
+    modal.classList.remove("show");
+    modal.style.display = "none";
 
-    }
+}
     document.getElementById("edit-group").addEventListener('click', function(e){
         e.preventDefault();
         showModal('edit-group-modal')
